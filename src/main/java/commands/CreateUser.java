@@ -1,4 +1,4 @@
-package commands.post;
+package commands;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -12,7 +12,7 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class SignupUser extends Command {
+public class CreateUser extends Command {
 
     public void execute() {
         HashMap<String, Object> props = parameters;

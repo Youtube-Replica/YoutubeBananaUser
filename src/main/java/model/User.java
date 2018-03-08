@@ -12,8 +12,8 @@ public class User {
         String url = "jdbc:postgresql://localhost/scalable";
         System.out.println("ID is: "+id);
         Properties props = new Properties();
-        props.setProperty("user", "nagaty");
-        props.setProperty("password", "61900");
+        props.setProperty("user", "postgres");
+        props.setProperty("password", "passw0rd");
         Connection conn = null;
         JSONObject userObject = new JSONObject();
         try {
@@ -23,8 +23,6 @@ public class User {
             while (rs.next()) {
                 userObject.put("user_name",rs.getString(2));
                 userObject.put("email",rs.getString(3));
-                userObject.put("date_of_birth",rs.getString(5));
-                userObject.put("gender",rs.getString(6));
             }
             rs.close();
             st.close();
@@ -38,8 +36,8 @@ public class User {
         String url = "jdbc:postgresql://localhost/scalable";
         System.out.println("ID is: "+id);
         Properties props = new Properties();
-        props.setProperty("user", "nagaty");
-        props.setProperty("password", "61900");
+        props.setProperty("user", "postgres");
+        props.setProperty("password", "passw0rd");
         Connection conn = null;
         int rowsDeleted =0;
         try {
@@ -55,25 +53,15 @@ public class User {
     }
 
     public static String signupUser(String user_name, String email, String password) {
-        System.out.println("IN SIGN UP USER");
         String url = "jdbc:postgresql://localhost/scalable";
         Properties props = new Properties();
-        props.setProperty("user", "nagaty");
-        props.setProperty("password", "61900");
+        props.setProperty("user", "postgres");
+        props.setProperty("password", "passw0rd");
         Connection conn = null;
         int rowsInserted =0;
         try {
             System.out.println("entered try");
             conn = DriverManager.getConnection(url, props);
-
-//            Statement stmt = conn.createStatement();
-//            String sql = "INSERT INTO app_user " +
-//                    "VALUES("
-//                    + "'" + user_name + "'" + ","
-//                    + "'" + email + "'" + ","
-//                    +  "'" + password +  "'"
-//                    + ")";
-
             PreparedStatement st = conn.prepareStatement("INSERT INTO app_user(user_name, email, password) values("
                     + "'" + user_name + "'" + ","
                     + "'" + email + "'" + ","
