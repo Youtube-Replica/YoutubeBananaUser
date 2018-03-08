@@ -12,8 +12,8 @@ public class User {
         String url = "jdbc:postgresql://localhost/scalable";
         System.out.println("ID is: "+id);
         Properties props = new Properties();
-        props.setProperty("user", "postgres");
-        props.setProperty("password", "passw0rd");
+        props.setProperty("user", "nagaty");
+        props.setProperty("password", "61900");
         Connection conn = null;
         JSONObject userObject = new JSONObject();
         try {
@@ -38,8 +38,8 @@ public class User {
         String url = "jdbc:postgresql://localhost/scalable";
         System.out.println("ID is: "+id);
         Properties props = new Properties();
-        props.setProperty("user", "postgres");
-        props.setProperty("password", "passw0rd");
+        props.setProperty("user", "nagaty");
+        props.setProperty("password", "61900");
         Connection conn = null;
         int rowsDeleted =0;
         try {
@@ -52,5 +52,42 @@ public class User {
             e.printStackTrace();
         }
         return rowsDeleted+" rows deleted";
+    }
+
+    public static String signupUser(String user_name, String email, String password) {
+        System.out.println("IN SIGN UP USER");
+        String url = "jdbc:postgresql://localhost/scalable";
+        Properties props = new Properties();
+        props.setProperty("user", "nagaty");
+        props.setProperty("password", "61900");
+        Connection conn = null;
+        int rowsInserted =0;
+        try {
+            System.out.println("entered try");
+            conn = DriverManager.getConnection(url, props);
+
+//            Statement stmt = conn.createStatement();
+//            String sql = "INSERT INTO app_user " +
+//                    "VALUES("
+//                    + "'" + user_name + "'" + ","
+//                    + "'" + email + "'" + ","
+//                    +  "'" + password +  "'"
+//                    + ")";
+
+            PreparedStatement st = conn.prepareStatement("INSERT INTO app_user(user_name, email, password) values("
+                    + "'" + user_name + "'" + ","
+                    + "'" + email + "'" + ","
+                    +  "'" + password +  "'"
+                    + ")"
+            );
+
+            rowsInserted = st.executeUpdate();
+            System.out.println("Passed SQL Query");
+            System.out.println(rowsInserted + " rows inserted");
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return rowsInserted + " rows inserted";
     }
 }

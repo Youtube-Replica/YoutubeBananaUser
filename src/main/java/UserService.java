@@ -4,6 +4,7 @@ import com.rabbitmq.client.*;
 import commands.Command;
 import commands.delete.DeleteUser;
 import commands.get.GetUser;
+import commands.post.SignupUser;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class UserService {
 
                     try {
                         String message = new String(body, "UTF-8");
-                        Command cmd = new DeleteUser();
+                        Command cmd = new SignupUser();
                         HashMap<String, Object> props = new HashMap<String, Object>();
                         props.put("channel", channel);
                         props.put("properties", properties);
