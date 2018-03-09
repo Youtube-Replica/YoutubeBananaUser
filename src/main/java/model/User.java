@@ -39,17 +39,16 @@ public class User {
         props.setProperty("user", "postgres");
         props.setProperty("password", "passw0rd");
         Connection conn = null;
-        int rowsDeleted =0;
         try {
             conn = DriverManager.getConnection(url, props);
-            PreparedStatement st = conn.prepareStatement("DELETE FROM app_user WHERE id="+id);
-             rowsDeleted = st.executeUpdate();
-            System.out.println(rowsDeleted + " rows deleted");
-            st.close();
+            CallableStatement upperProc = conn.prepareCall("{ call delete_user( ? ) }");
+            upperProc.setInt(1,id);
+            upperProc.execute();
+            upperProc.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return rowsDeleted+" rows deleted";
+        return "rows deleted";
     }
 
     public static String signupUser(String user_name, String email, String password) {
