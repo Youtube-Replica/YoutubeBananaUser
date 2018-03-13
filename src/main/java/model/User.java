@@ -18,14 +18,18 @@ public class User {
         JSONObject userObject = new JSONObject();
         try {
             conn = DriverManager.getConnection(url, props);
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM app_user WHERE id="+id);
+            conn.setAutoCommit(false);
+            CallableStatement upperProc = conn.prepareCall("{? = call get_user_by_id( ? ) }");
+            upperProc.registerOutParameter(1,Types.OTHER);
+            upperProc.setInt(2,id);
+            upperProc.execute();
+            ResultSet rs = (ResultSet) upperProc.getObject(1);
             while (rs.next()) {
                 userObject.put("user_name",rs.getString(2));
                 userObject.put("email",rs.getString(3));
             }
             rs.close();
-            st.close();
+            upperProc.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -39,16 +43,20 @@ public class User {
         props.setProperty("user", "postgres");
         props.setProperty("password", "passw0rd");
         Connection conn = null;
+        int rowsDeleted =0;
         try {
             conn = DriverManager.getConnection(url, props);
-            CallableStatement upperProc = conn.prepareCall("{ call delete_user( ? ) }");
-            upperProc.setInt(1,id);
+            CallableStatement upperProc = conn.prepareCall("{? = call delete_user( ? ) }");
+            upperProc.registerOutParameter(1,Types.INTEGER);
+            upperProc.setInt(2,id);
             upperProc.execute();
+            rowsDeleted = upperProc.getInt(1);
             upperProc.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return "rows deleted";
+        System.out.println(rowsDeleted + " rows deleted");
+        return rowsDeleted + " rows deleted";
     }
 
     public static String signupUser(String user_name, String email, String password) {
