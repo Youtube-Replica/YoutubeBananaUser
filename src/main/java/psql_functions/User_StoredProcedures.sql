@@ -33,12 +33,16 @@ $BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 
 --DELETE--
-CREATE OR REPLACE FUNCTION public.delete_user (_id INT = NULL)
-RETURNS VOID AS
+CREATE OR REPLACE FUNCTION delete_user (_id INT = NULL)
+RETURNS integer AS
 $BODY$
+DECLARE
+  a_count integer;
 BEGIN
 DELETE FROM app_user
 WHERE id = _id;
+GET DIAGNOSTICS a_count = ROW_COUNT;
+RETURN a_count;
 END;
 $BODY$
 LANGUAGE 'plpgsql' VOLATILE;
@@ -52,6 +56,19 @@ BEGIN
 UPDATE app_user
 SET password = _password
 WHERE id = _id;
+END;
+$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
+
+--GET USER--
+CREATE OR REPLACE FUNCTION get_user_by_id (_id INT = NULL)
+RETURNS refcursor AS
+$BODY$
+DECLARE
+ref refcursor;
+BEGIN
+OPEN ref FOR SELECT * FROM app_user WHERE id= _id;
+RETURN ref;
 END;
 $BODY$
 LANGUAGE 'plpgsql' VOLATILE;
