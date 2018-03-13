@@ -12,8 +12,8 @@ public class User {
         String url = "jdbc:postgresql://localhost/scalable";
         System.out.println("ID is: "+id);
         Properties props = new Properties();
-        props.setProperty("user", "postgres");
-        props.setProperty("password", "passw0rd");
+        props.setProperty("user", "nagaty");
+        props.setProperty("password", "61900");
         Connection conn = null;
         JSONObject userObject = new JSONObject();
         try {
@@ -36,14 +36,17 @@ public class User {
         String url = "jdbc:postgresql://localhost/scalable";
         System.out.println("ID is: "+id);
         Properties props = new Properties();
-        props.setProperty("user", "postgres");
-        props.setProperty("password", "passw0rd");
+        props.setProperty("user", "nagaty");
+        props.setProperty("password", "61900");
+        int rowsDeleted = 0;
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url, props);
             CallableStatement upperProc = conn.prepareCall("{ call delete_user( ? ) }");
             upperProc.setInt(1,id);
-            upperProc.execute();
+            rowsDeleted = upperProc.executeUpdate();
+            System.out.println("Rows deleted:" + rowsDeleted);
+            //Set SQL Function to return 1 if successful delete
             upperProc.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -54,27 +57,51 @@ public class User {
     public static String signupUser(String user_name, String email, String password) {
         String url = "jdbc:postgresql://localhost/scalable";
         Properties props = new Properties();
-        props.setProperty("user", "postgres");
-        props.setProperty("password", "passw0rd");
+        props.setProperty("user", "nagaty");
+        props.setProperty("password", "61900");
         Connection conn = null;
-        int rowsInserted =0;
+        String rowsInserted ="";
         try {
-            System.out.println("entered try");
             conn = DriverManager.getConnection(url, props);
-            PreparedStatement st = conn.prepareStatement("INSERT INTO app_user(user_name, email, password) values("
-                    + "'" + user_name + "'" + ","
-                    + "'" + email + "'" + ","
-                    +  "'" + password +  "'"
-                    + ")"
-            );
+            CallableStatement upperProc = conn.prepareCall("{ call user_signup( ?, ?, ? ) }");
+            upperProc.setString(1,user_name);
+            upperProc.setString(2,email);
+            upperProc.setString(3,password);
 
-            rowsInserted = st.executeUpdate();
-            System.out.println("Passed SQL Query");
-            System.out.println(rowsInserted + " rows inserted");
-            st.close();
+            rowsInserted = "rows inserted " + upperProc.executeUpdate();
+            //Set SQL Function to return 1 if successful insert
+            upperProc.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("SQL Error State: " + e.getSQLState());
+            if(Integer.parseInt(e.getSQLState()) == 23505){
+                rowsInserted = "This email already exists.";
+            }
+            else {
+                rowsInserted = "-1";
+                e.printStackTrace();
+            }
         }
-        return rowsInserted + " rows inserted";
+        return rowsInserted;
+    }
+
+    public static String changePasswordById(int id, String password) {
+        String url = "jdbc:postgresql://localhost/scalable";
+        Properties props = new Properties();
+        props.setProperty("user", "nagaty");
+        props.setProperty("password", "61900");
+        Connection conn = null;
+        String rowsAffected ="-1";
+        try {
+            conn = DriverManager.getConnection(url, props);
+            CallableStatement upperProc = conn.prepareCall("{ call user_change_password( ?, ? ) }");
+            upperProc.setInt(1,id);
+            upperProc.setString(2,password);
+            rowsAffected = "rows affected " + upperProc.executeUpdate();
+            upperProc.close();
+        } catch (SQLException e) {
+            System.out.println("SQL Error State: " + e.getSQLState());
+                e.printStackTrace();
+        }
+        return rowsAffected;
     }
 }
