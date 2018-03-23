@@ -18,7 +18,7 @@ $BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 
 --LOGIN--
-CREATE OR REPLACE FUNCTION public.login_user (_email varchar(255)=NULL,_password varchar(255)=NULL)
+CREATE OR REPLACE FUNCTION login_user (_email varchar(255)=NULL,_password varchar(255)=NULL)
 RETURNS refcursor AS
 $BODY$
 DECLARE
@@ -48,14 +48,17 @@ $BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 
 --CHANGE PASSWORD--
-CREATE OR REPLACE FUNCTION public.change_password_user (_id INT=NULL,_password varchar(255)=NULL)
-RETURNS VOID
-AS
+CREATE OR REPLACE FUNCTION change_password_user (_id INT=NULL,_password varchar(255)=NULL)
+RETURNS integer AS
 $BODY$
+DECLARE
+  a_count integer;
 BEGIN
 UPDATE app_user
 SET password = _password
 WHERE id = _id;
+GET DIAGNOSTICS a_count = ROW_COUNT;
+RETURN a_count;
 END;
 $BODY$
 LANGUAGE 'plpgsql' VOLATILE;

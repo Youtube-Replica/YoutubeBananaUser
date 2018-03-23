@@ -35,7 +35,7 @@ public class UpdateUser extends Command {
         AMQP.BasicProperties properties = (AMQP.BasicProperties) props.get("properties");
         AMQP.BasicProperties replyProps = (AMQP.BasicProperties) props.get("replyProps");
         Envelope envelope = (Envelope) props.get("envelope");
-        String response = User.changePasswordById(id,password);
+        String response = User.changePasswordById(id,password) + "";
 //        String response = (String)props.get("body");
         try {
             channel.basicPublish("", properties.getReplyTo(), replyProps, response.getBytes("UTF-8"));

@@ -12,8 +12,8 @@ public class User {
         String url = "jdbc:postgresql://localhost/scalable";
         System.out.println("ID is: "+id);
         Properties props = new Properties();
-        props.setProperty("user", "postgres");
-        props.setProperty("password", "passw0rd");
+        props.setProperty("user", "nagaty");
+        props.setProperty("password", "61900");
         Connection conn = null;
         JSONObject userObject = new JSONObject();
         try {
@@ -40,8 +40,8 @@ public class User {
         String url = "jdbc:postgresql://localhost/scalable";
         System.out.println("ID is: "+id);
         Properties props = new Properties();
-        props.setProperty("user", "postgres");
-        props.setProperty("password", "passw0rd");
+        props.setProperty("user", "nagaty");
+        props.setProperty("password", "61900");
         Connection conn = null;
         int rowsDeleted =0;
         try {
@@ -90,23 +90,27 @@ public class User {
     }
 
     public static String changePasswordById(int id, String password) {
+        System.out.println("In Update password");
         String url = "jdbc:postgresql://localhost/scalable";
         Properties props = new Properties();
         props.setProperty("user", "nagaty");
         props.setProperty("password", "61900");
         Connection conn = null;
-        String rowsAffected ="-1";
+        int rowsAffected = 0;
         try {
             conn = DriverManager.getConnection(url, props);
-            CallableStatement upperProc = conn.prepareCall("{ call user_change_password( ?, ? ) }");
-            upperProc.setInt(1,id);
-            upperProc.setString(2,password);
-            rowsAffected = "rows affected " + upperProc.executeUpdate();
+            CallableStatement upperProc = conn.prepareCall("{ ? = call change_password_user( ?, ? ) }");
+            upperProc.registerOutParameter(1,Types.INTEGER);
+            upperProc.setInt(2,id);
+            upperProc.setString(3,password);
+            upperProc.execute();
+            rowsAffected = upperProc.getInt(1);
             upperProc.close();
+
         } catch (SQLException e) {
             System.out.println("SQL Error State: " + e.getSQLState());
                 e.printStackTrace();
         }
-        return rowsAffected;
+        return "Rows Affected: " + rowsAffected;
     }
 }
