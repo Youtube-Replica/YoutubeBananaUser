@@ -22,7 +22,7 @@ public class UserService {
         final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
 
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost("mq");
         Connection connection = null;
         try {
             connection = factory.newConnection();
