@@ -12,8 +12,8 @@ public class User {
         String url = "jdbc:postgresql://localhost/scalable";
         System.out.println("ID is: "+id);
         Properties props = new Properties();
-        props.setProperty("user", "nagaty");
-        props.setProperty("password", "61900");
+        props.setProperty("user", "hazemelagaty");
+        props.setProperty("password", "");
         Connection conn = null;
         JSONObject userObject = new JSONObject();
         try {
