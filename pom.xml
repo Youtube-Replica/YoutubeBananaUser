@@ -23,7 +23,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>fully.qualified.MainClass</mainClass>
+                            <mainClass>UserService</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
