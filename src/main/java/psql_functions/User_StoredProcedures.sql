@@ -1,5 +1,5 @@
 --SIGN UP--
-CREATE OR REPLACE FUNCTION public.signup_user (_user_name varchar(255) = NULL, _email varchar(255) = NULL, _password varchar(255) = NULL)
+CREATE OR REPLACE FUNCTION public.signup_user (_user_name varchar(255) = NULL, _email varchar(255) = NULL, _password varchar(255) = NULL,_salt VARCHAR(255)=NULL)
 RETURNS VOID
 AS
 $BODY$
@@ -7,18 +7,20 @@ BEGIN
 INSERT INTO public.app_user(
         user_name,
         email,
-        password
+        password,
+        salt
 )values(
     _user_name,
     _email,
-    _password
+    _password,
+    _salt
 );
 END;
 $BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 
 --LOGIN--
-CREATE OR REPLACE FUNCTION login_user (_email varchar(255)=NULL,_password varchar(255)=NULL)
+CREATE OR REPLACE FUNCTION login_user(_email varchar(255)=NULL,_password varchar(255)=NULL)
 RETURNS refcursor AS
 $BODY$
 DECLARE
@@ -59,6 +61,19 @@ SET password = _password
 WHERE id = _id;
 GET DIAGNOSTICS a_count = ROW_COUNT;
 RETURN a_count;
+END;
+$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
+
+--GET USER--
+CREATE OR REPLACE FUNCTION get_user_salt (_email varchar(255) = NULL)
+RETURNS refcursor AS
+$BODY$
+DECLARE
+ref refcursor;
+BEGIN
+OPEN ref FOR SELECT * FROM app_user WHERE email= _email;
+RETURN ref;
 END;
 $BODY$
 LANGUAGE 'plpgsql' VOLATILE;

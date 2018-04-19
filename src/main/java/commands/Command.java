@@ -1,5 +1,6 @@
 package commands;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 public abstract class Command implements Runnable {
@@ -10,10 +11,14 @@ public abstract class Command implements Runnable {
         this.parameters = parameters;
     }
 
-    protected abstract void execute();
+    protected abstract void execute() throws NoSuchAlgorithmException;
 
     final public void run() {
-        this.execute();
+        try {
+            this.execute();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
 }
