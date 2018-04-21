@@ -22,7 +22,8 @@ public class UserService {
         final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
 
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("mq");
+        String host = System.getenv("RABBIT_MQ");
+        factory.setHost(host);
         Connection connection = null;
         try {
             connection = factory.newConnection();
