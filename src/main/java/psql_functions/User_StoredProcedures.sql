@@ -85,7 +85,7 @@ $BODY$
 DECLARE
 ref refcursor;
 BEGIN
-OPEN ref FOR SELECT * FROM app_user WHERE id= _id;
+OPEN ref FOR SELECT user_name,email FROM app_user WHERE id= _id;
 RETURN ref;
 END;
 $BODY$
