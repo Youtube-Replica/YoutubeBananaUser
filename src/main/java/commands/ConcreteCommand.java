@@ -13,6 +13,7 @@ public abstract class ConcreteCommand extends Command {
     Channel channel;
     String RPC_QUEUE_NAME;
     public void consume(String RPC_QUEUE_NAME) {
+
         this.RPC_QUEUE_NAME = RPC_QUEUE_NAME;
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
@@ -24,7 +25,7 @@ public abstract class ConcreteCommand extends Command {
 
             channel.basicQos(1);
 
-            System.out.println(" [x] Awaiting RPC requests");
+            System.out.println(" [x] Awaiting DB-RPC Responses");
 
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
@@ -35,7 +36,7 @@ public abstract class ConcreteCommand extends Command {
                             .Builder()
                             .correlationId(properties.getCorrelationId())
                             .build();
-                    System.out.println("Responding to corrID: "+ properties.getCorrelationId());
+                    System.out.println("Responding to db-corrID: "+ properties.getCorrelationId());
 
                     String response = "";
 
@@ -79,7 +80,7 @@ public abstract class ConcreteCommand extends Command {
                     .replyTo(RPC_QUEUE_NAME)
                     .build();
             System.out.println("Sent: "+ message);
-            Envelope envelope = (Envelope) parameters.get("envelope");
+//            Envelope envelope = (Envelope) parameters.get("envelope");
             channel.basicPublish("", service + "-request", props, message.getBytes());
         } catch (Exception e) {
             e.printStackTrace();

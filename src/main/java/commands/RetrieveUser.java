@@ -56,12 +56,12 @@ public class RetrieveUser extends ConcreteCommand {
 
         sendMessage("database",properties.getCorrelationId(), response);
 
-
     }
 
 
     @Override
     public void handleApi(HashMap<String, Object> service_parameters) {
+        System.out.println("Replying to the server..");
         HashMap<String, Object> props = parameters;
         AMQP.BasicProperties properties = (AMQP.BasicProperties) props.get("properties");
         AMQP.BasicProperties replyProps = (AMQP.BasicProperties) props.get("replyProps");
@@ -70,7 +70,7 @@ public class RetrieveUser extends ConcreteCommand {
         try {
             // TODO Re-map al UUID to old replyTo
             channel.basicPublish("", properties.getReplyTo(), replyProps, body.getBytes("UTF-8"));
-            channel.basicAck(envelope.getDeliveryTag(), false);
+//            channel.basicAck(envelope.getDeliveryTag(), false);
         } catch (IOException e) {
             e.printStackTrace();
         }
