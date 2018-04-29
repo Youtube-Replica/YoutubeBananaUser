@@ -12,33 +12,7 @@ import java.util.Properties;
 public class User {
     //example
     public static String getUserById(int id) {
-<<<<<<< HEAD
-        String url = "jdbc:postgresql://localhost/scalable";
-        System.out.println("ID is: "+id);
-        Properties props = new Properties();
-        props.setProperty("user", "hazemelagaty");
-        props.setProperty("password", "");
-        Connection conn = null;
-        JSONObject userObject = new JSONObject();
-        try {
-            conn = DriverManager.getConnection(url, props);
-            conn.setAutoCommit(false);
-            CallableStatement upperProc = conn.prepareCall("{? = call get_user_by_id( ? ) }");
-            upperProc.registerOutParameter(1,Types.OTHER);
-            upperProc.setInt(2,id);
-            upperProc.execute();
-            ResultSet rs = (ResultSet) upperProc.getObject(1);
-            while (rs.next()) {
-                userObject.put("user_name",rs.getString(2));
-                userObject.put("email",rs.getString(3));
-            }
-            rs.close();
-            upperProc.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    return userObject.toString();
-=======
+
         String callStatement = "{? = call get_user_by_id( ? ) }";
         JSONObject json = new JSONObject();
         JSONArray jsonArray = new JSONArray();
@@ -119,7 +93,6 @@ public class User {
         json.put("out_type",Types.OTHER);
         json.put("input_array",jsonArray);
         return json.toString();
->>>>>>> d68bec81d776aa5ffba71743d861fd9cb59a4bc5
     }
 
     public static String deleteUserById(int id){
