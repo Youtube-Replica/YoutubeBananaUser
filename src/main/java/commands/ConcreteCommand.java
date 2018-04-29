@@ -1,10 +1,6 @@
 package commands;
 
 import com.rabbitmq.client.*;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
@@ -57,13 +53,11 @@ public abstract class ConcreteCommand extends Command {
                             this.notify();
                         }
                     }
-                } else {
-                        this.getChannel().basicNack(envelope.getDeliveryTag(), false, true);
-                    }
+                }
                 }
             };
 
-            channel.basicConsume(RPC_QUEUE_NAME, false, consumer);
+            channel.basicConsume(RPC_QUEUE_NAME, true, consumer);
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }
