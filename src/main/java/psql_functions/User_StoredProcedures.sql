@@ -26,7 +26,7 @@ $BODY$
 DECLARE
 ref refcursor;
 BEGIN
-OPEN ref FOR SELECT * FROM app_user
+OPEN ref FOR SELECT user_name,email FROM app_user
              WHERE email = _email
                 AND password = _password;
                 RETURN ref;
@@ -72,7 +72,7 @@ $BODY$
 DECLARE
 ref refcursor;
 BEGIN
-OPEN ref FOR SELECT * FROM app_user WHERE email= _email;
+OPEN ref FOR SELECT salt FROM app_user WHERE email= _email;
 RETURN ref;
 END;
 $BODY$

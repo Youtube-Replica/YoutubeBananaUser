@@ -26,55 +26,72 @@ public class User {
     return json.toString();
     }
 
-    public static String loginUser(String email, String password) throws NoSuchAlgorithmException {
-        String url = "jdbc:postgresql://localhost/scalable";
-        Properties props = new Properties();
-        props.setProperty("user", "postgres");
-        props.setProperty("password", "passw0rd");
-        Connection conn = null;
-        JSONObject userObject = new JSONObject();
-        try {
-            conn = DriverManager.getConnection(url, props);
-            conn.setAutoCommit(false);
-            CallableStatement storProc = conn.prepareCall("{? = call get_user_salt(?)}");
-            storProc.registerOutParameter(1,Types.OTHER);
-            storProc.setString(2,email);
-            storProc.execute();
-            ResultSet rs1 = (ResultSet) storProc.getObject(1);
+    public static String getUserSalt(String email) throws NoSuchAlgorithmException {
+        String callStatement = "{? = call get_user_salt(?)}";
+        JSONObject json = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        JSONObject inputObject = new JSONObject();
+        inputObject.put("type",Types.VARCHAR);
+        inputObject.put("value",email);
+        jsonArray.add(inputObject);
+        json.put("call_statement",callStatement);
+        json.put("out_type",Types.OTHER);
+        json.put("input_array",jsonArray);
+//
+//        try {
+//            String saltString ="";
+////            while (rs1.next()) {
+////                saltString = rs1.getString("salt");
+////            }
+////            rs1.close();
+////
+////            byte [] salt = Base64.getDecoder().decode(saltString);
+////            password = SHAHashing.get_SHA_256_SecurePassword(password,salt);
+////
+////            storProc.close();
+////
+////            CallableStatement upperProc = conn.prepareCall("{? = call login_user( ?,? ) }");
+////
+////            upperProc.registerOutParameter(1,Types.OTHER);
+////
+////            upperProc.setString(2,email);
+////            upperProc.setString(3,password);
+////            upperProc.execute();
+////
+////            ResultSet rs = (ResultSet) upperProc.getObject(1);
+////
+////            while (rs.next()) {
+////                userObject.put("user_name",rs.getString(2));
+////                userObject.put("email",rs.getString(3));
+////            }
+////            rs.close();
+////            upperProc.close();
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
 
-            String saltString ="";
-            while (rs1.next()) {
-                saltString = rs1.getString("salt");
-            }
-            rs1.close();
+        return json.toString();
+    }
 
-            byte [] salt = Base64.getDecoder().decode(saltString);
-            password = SHAHashing.get_SHA_256_SecurePassword(password,salt);
-
-            storProc.close();
-
-            CallableStatement upperProc = conn.prepareCall("{? = call login_user( ?,? ) }");
-
-            upperProc.registerOutParameter(1,Types.OTHER);
-
-            upperProc.setString(2,email);
-            upperProc.setString(3,password);
-            upperProc.execute();
-
-            ResultSet rs = (ResultSet) upperProc.getObject(1);
-
-            while (rs.next()) {
-                userObject.put("user_name",rs.getString(2));
-                userObject.put("email",rs.getString(3));
-            }
-            rs.close();
-            upperProc.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return userObject.toString();
+    public static String loginUser(String email,String password,String salt) throws NoSuchAlgorithmException {
+        byte [] byteSalt = Base64.getDecoder().decode(salt);
+            password = SHAHashing.get_SHA_256_SecurePassword(password,byteSalt);
+        String callStatement = "{? = call login_user( ?,? )}";
+        JSONObject json = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        JSONObject inputEmail = new JSONObject();
+        JSONObject inputPassword = new JSONObject();
+        inputEmail.put("type",Types.VARCHAR);
+        inputEmail.put("value",email);
+        jsonArray.add(inputEmail);
+        inputPassword.put("type",Types.VARCHAR);
+        inputPassword.put("value",password);
+        jsonArray.add(inputPassword);
+        json.put("call_statement",callStatement);
+        json.put("out_type",Types.OTHER);
+        json.put("input_array",jsonArray);
+        return json.toString();
     }
 
     public static String deleteUserById(int id){
