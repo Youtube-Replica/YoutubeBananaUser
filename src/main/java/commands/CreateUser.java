@@ -10,11 +10,12 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 public class CreateUser extends Command {
 
-    public void execute() {
+    public void execute() throws NoSuchAlgorithmException {
         HashMap<String, Object> props = parameters;
 
         Channel channel = (Channel) props.get("channel");
