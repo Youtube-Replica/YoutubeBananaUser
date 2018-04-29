@@ -50,14 +50,14 @@ $BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 
 --CHANGE PASSWORD--
-CREATE OR REPLACE FUNCTION change_password_user (_id INT=NULL,_password varchar(255)=NULL)
+CREATE OR REPLACE FUNCTION change_password_user (_id INT=NULL,_password varchar(255)=NULL,_salt varchar(255) = NULL)
 RETURNS integer AS
 $BODY$
 DECLARE
   a_count integer;
 BEGIN
 UPDATE app_user
-SET password = _password
+SET password = _password,salt =_salt
 WHERE id = _id;
 GET DIAGNOSTICS a_count = ROW_COUNT;
 RETURN a_count;
