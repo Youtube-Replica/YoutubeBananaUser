@@ -9,7 +9,6 @@ public abstract class ConcreteCommand extends Command {
     Channel channel;
     String RPC_QUEUE_NAME;
     public void consume(String RPC_QUEUE_NAME) {
-
         this.RPC_QUEUE_NAME = RPC_QUEUE_NAME;
         ConnectionFactory factory = new ConnectionFactory();
         String host = System.getenv("RABBIT_MQ_SERVICE_HOST");
@@ -20,15 +19,20 @@ public abstract class ConcreteCommand extends Command {
             channel = connection.createChannel();
             channel.queueDeclare(RPC_QUEUE_NAME, false, false, false, null);
 
-            channel.basicQos(1);
 
             System.out.println(" [x] Awaiting DB-RPC Responses");
 
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+
                     AMQP.BasicProperties myProps = (AMQP.BasicProperties) parameters.get("properties");
+
+                    System.out.println("Incoming corrID "+ properties.getCorrelationId());
+                    System.out.println("My corrID "+ myProps.getCorrelationId());
+
                     if(properties.getCorrelationId().equals(myProps.getCorrelationId())){
+                        System.out.println("after if");
                     AMQP.BasicProperties replyProps = new AMQP.BasicProperties
                             .Builder()
                             .correlationId(properties.getCorrelationId())
@@ -47,6 +51,7 @@ public abstract class ConcreteCommand extends Command {
                         props.put("body", message);
 
                         handleApi(props);
+                        this.getChannel().basicAck(envelope.getDeliveryTag(), false);
                     } catch (RuntimeException e) {
                         System.out.println(" [.] " + e.toString());
                     }  finally {
@@ -55,10 +60,12 @@ public abstract class ConcreteCommand extends Command {
                         }
                     }
                 }
+                    else {
+                        this.getChannel().basicNack(envelope.getDeliveryTag(), false, true);
+                        }
                 }
             };
-
-            channel.basicConsume(RPC_QUEUE_NAME, true, consumer);
+            channel.basicConsume(RPC_QUEUE_NAME, false, consumer);
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }
@@ -74,8 +81,8 @@ public abstract class ConcreteCommand extends Command {
                     .correlationId(requestId)
                     .replyTo(RPC_QUEUE_NAME)
                     .build();
-            System.out.println("Sent: "+ message);
-//            Envelope envelope = (Envelope) parameters.get("envelope");
+            System.out.println(service);
+            System.out.println("Sending to db :"+message);
             channel.basicPublish("", service + "-request", props, message.getBytes());
         } catch (Exception e) {
             e.printStackTrace();

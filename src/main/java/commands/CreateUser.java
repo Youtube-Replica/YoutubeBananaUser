@@ -13,11 +13,11 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
-public class CreateUser extends Command {
+public class CreateUser extends ConcreteCommand {
 
     public void execute() throws NoSuchAlgorithmException {
+        this.consume("r3");
         HashMap<String, Object> props = parameters;
-
         Channel channel = (Channel) props.get("channel");
         JSONParser parser = new JSONParser();
         int id = 0;
@@ -31,7 +31,6 @@ public class CreateUser extends Command {
             username = params.get("username").toString();
             email = params.get("email").toString();
             password = params.get("password").toString();
-            System.out.println("User: " + username + ", email: " + email + ", password: " + password);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -40,12 +39,22 @@ public class CreateUser extends Command {
         Envelope envelope = (Envelope) props.get("envelope");
         String response = User.signupUser(username,email,password);
 //        String response = (String)props.get("body");
+        sendMessage("database",properties.getCorrelationId(), response);
+
+    }
+
+    @Override
+    public void handleApi(HashMap<String, Object> service_parameters) {
+        HashMap<String, Object> props = parameters;
+        AMQP.BasicProperties properties = (AMQP.BasicProperties) props.get("properties");
+        AMQP.BasicProperties replyProps = (AMQP.BasicProperties) props.get("replyProps");
+        String serviceBody = service_parameters.get("body").toString();
+
+        Envelope envelope = (Envelope) props.get("envelope");
         try {
-            channel.basicPublish("", properties.getReplyTo(), replyProps, response.getBytes("UTF-8"));
-            channel.basicAck(envelope.getDeliveryTag(), false);
+            channel.basicPublish("", properties.getReplyTo(), replyProps, serviceBody.getBytes("UTF-8"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }

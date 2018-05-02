@@ -66,16 +66,16 @@ public class RetrieveUser extends ConcreteCommand {
         AMQP.BasicProperties properties = (AMQP.BasicProperties) props.get("properties");
         AMQP.BasicProperties replyProps = (AMQP.BasicProperties) props.get("replyProps");
 
-
-        Envelope envelope = (Envelope) props.get("envelope");
         try {
             JSONParser parser = new JSONParser();
             JSONArray serviceBody = (JSONArray) parser.parse((String) service_parameters.get("body"));
-            if(serviceBody !=null){
+            if(!serviceBody.isEmpty()){
                 JSONObject message = (JSONObject) serviceBody.get(0);
             if(!message.containsKey("salt")){
             // TODO Re-map al UUID to old replyTo
-            channel.basicPublish("", properties.getReplyTo(), replyProps, serviceBody.toString().getBytes("UTF-8"));
+                System.out.println("Sending to server :" + serviceBody.toString());
+                System.out.println("replying to: " + properties.getReplyTo().toString());
+                channel.basicPublish("", properties.getReplyTo(), replyProps, serviceBody.toString().getBytes("UTF-8"));
             }else{
                 JSONObject serverBody = (JSONObject) parser.parse((String) props.get("body"));
                 JSONObject params = (JSONObject) parser.parse(serverBody.get("parameters").toString());
@@ -83,11 +83,10 @@ public class RetrieveUser extends ConcreteCommand {
                 String password = params.get("password").toString();
                 String salt = message.get("salt").toString();
                 String response =  User.loginUser(email,password,salt);
-                System.out.println(response);
                 sendMessage("database",properties.getCorrelationId(), response);
             }
             }
-//            channel.basicAck(envelope.getDeliveryTag(), false);
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {
