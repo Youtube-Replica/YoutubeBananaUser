@@ -17,7 +17,7 @@ public class UpdateUser extends ConcreteCommand {
 
     public void execute() throws NoSuchAlgorithmException {
         HashMap<String, Object> props = parameters;
-        this.consume("r4");
+        this.consume("u4");
         Channel channel = (Channel) props.get("channel");
         JSONParser parser = new JSONParser();
         int id = 0;

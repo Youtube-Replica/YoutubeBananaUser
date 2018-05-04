@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 public class DeleteUser extends ConcreteCommand {
     public void execute() {
-        this.consume("r2");
+        this.consume("u2");
         HashMap<String, Object> props = parameters;
 
         Channel channel = (Channel) props.get("channel");

@@ -16,7 +16,7 @@ import java.util.HashMap;
 public class CreateUser extends ConcreteCommand {
 
     public void execute() throws NoSuchAlgorithmException {
-        this.consume("r3");
+        this.consume("u3");
         HashMap<String, Object> props = parameters;
         Channel channel = (Channel) props.get("channel");
         JSONParser parser = new JSONParser();

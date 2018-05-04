@@ -18,7 +18,7 @@ import java.util.HashMap;
 public class RetrieveUser extends ConcreteCommand {
 
     public void execute() throws NoSuchAlgorithmException {
-        this.consume("r1");
+        this.consume("u1");
         HashMap<String, Object> props = parameters;
         String password = "";
         String email = "";
